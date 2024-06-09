@@ -1,0 +1,40 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: openvpn
+  namespace: eric
+  labels:
+    app: openvpn
+spec:
+  replicas: 7
+  progressDeadlineSeconds: 600
+  revisionHistoryLimit: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: openvpn
+  template:
+    metadata:
+      labels:
+        app: openvpn
+    spec:
+      containers:
+      - name: openvpn
+        image: quay.io/tkaefer/docker-openvpn
+        command: ["bash", "-c", "/etc/config/startup.sh"]
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+            - NET_ADMIN
+            - MKNOD
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: openvpn
+            defaultMode: 0777

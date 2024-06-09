@@ -3,11 +3,11 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: openvpn
-  namespace: eric
+  namespace: vpn
   labels:
     app: openvpn
 spec:
-  replicas: 7
+  replicas: 2
   progressDeadlineSeconds: 600
   revisionHistoryLimit: 2
   strategy:
@@ -33,8 +33,26 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /etc/config
+        - name: shared-data
+          mountPath: /tmp
+
+      - name: metrics
+        image: docker.io/kumina/openvpn-exporter
+        command: ["/bin/openvpn_exporter", "-openvpn.status_paths", "/etc/openvpn/openvpn-status.log", "-web.listen-address", "0.0.0.0:9176"]
+        volumeMounts:
+        - name: shared-data
+          mountPath: /etc/openvpn
+
+      - name: ubuntu
+        image: ubuntu
+        command: ["bash", "-c", "sleep 10000000"]
+        volumeMounts:
+        - name: shared-data
+          mountPath: /etc/openvpn                    
       volumes:
         - name: config-volume
           configMap:
             name: openvpn
             defaultMode: 0777
+        - name: shared-data
+          emptyDir: {}

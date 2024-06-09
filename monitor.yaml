@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: metrics-service-monitor
+  namespace: vpn
+  labels:
+    app: openvpn
+spec:
+  selector:
+    matchLabels:
+      app: openvpn
+  namespaceSelector:
+    matchNames:
+      - vpn
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics

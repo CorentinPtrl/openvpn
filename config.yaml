@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: openvpn
-  namespace: eric
+  namespace: vpn
 data:
   startup.sh: |-
     #!/bin/bash

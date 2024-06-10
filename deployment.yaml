@@ -7,7 +7,7 @@ metadata:
   labels:
     app: openvpn
 spec:
-  replicas: 2
+  replicas: 0
   progressDeadlineSeconds: 600
   revisionHistoryLimit: 2
   strategy:
@@ -35,6 +35,8 @@ spec:
           mountPath: /etc/config
         - name: shared-data
           mountPath: /tmp
+        - name: open-pv-storage
+          mountPath: /etc/openvpn
 
       - name: metrics
         image: docker.io/kumina/openvpn-exporter
@@ -56,3 +58,6 @@ spec:
             defaultMode: 0777
         - name: shared-data
           emptyDir: {}
+        - name: open-pv-storage
+          persistentVolumeClaim:
+            claimName: openvpn-vol-claim-nfs
